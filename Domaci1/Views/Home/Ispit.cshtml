@@ -1,0 +1,259 @@
+﻿@model IEnumerable<Domaci1.Ispit>
+
+
+@{
+    ViewBag.Title = "Ispit";
+
+}
+
+<h2>Ispit</h2>
+<br />
+<button type="button" class="btn btn-primary pull-right" data-toggle="model" id="btnAdd">
+    Dodaj novo polaganje <span class="fa fa-plus-square" aria-hidden="true"></span>
+</button>
+<br />
+<br />
+<br />
+<table class="table table-striped table-hover table-bordered" id="IspitTable" style="margin-top:20px">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Student.Ime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Predmet.Naziv)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ocena)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Datum)
+            </th>
+
+
+            <th>Action</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Student.Ime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Predmet.Naziv)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ocena)
+                </td>
+                <td>
+                    @Convert.ToDateTime(item.Datum).ToString("dd/MM/yyyy")
+                </td>
+
+
+                <td>
+                    <a id="btnUpdateStd" style='color: #428bca;' onclick="GetIspit(@item.IdI)" data-toggle='tooltip' title='Promeni Ispit' href='javascript:;'>Promeni</a> |
+                    <a class="fa fa-trash-o btnDelete" style='color: #428bca;' data-toggle='tooltip' title='Obrisi Ispit' data-id="@item.IdI" href='javascript:;'>Obrisi</a>
+
+                </td>
+            </tr>
+
+        }
+    </tbody>
+
+
+
+</table>
+
+
+
+<link href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+@section scripts{
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+        $("#IspitTable").DataTable({
+
+        });
+        $("#btnAdd").click(function () {
+            $("#txtBrIndeksa").val("");
+            $("#txtIdP").val("");
+            $("#txtOcena").val("");
+            $("#txtDatum").val("");
+            $("#ModalTitle").text("Dodaj Ispit");
+            $("#btnUpdate").hide();
+            $('#IspitModal').modal('show');
+
+        });
+
+        $("#btnSave").click(function () {
+            var table = $("#IspitTable").DataTable()
+            var StudentObj = {
+                BrIndeksa: $("#txtBrIndeksa").val(),
+                IdP: $("#txtIdP").val(),
+                Ocena: $("#txtOcena").val(),
+                Datum: $("#txtDatum").val()
+
+            }
+            $.ajax({
+                url: "/Home/DodajIspit",
+                "type": 'POST',
+                "datatype": 'json',
+                "contentType": "application/json; charset=utf-8",
+                "data": JSON.stringify(StudentObj),
+                "success": function (response) {
+                    if (response.status) {
+                        alert(response.message);
+                        table.row.add([ $('#txtBrIndeksa').val(), $('#txtIdP').val(), $('#txtOcena').val(), $('#txtDatum').val(), $]).draw(false);
+
+                    }
+                }
+            });
+
+            $('#btnSave').hide();
+            $('#btnUpdate').hide();
+        });
+        $('body').on('click', '.btnDelete', function () {
+            var $this = $(this);
+            alert('Are you sure you want to delete this record ?');
+            var table = $('#IspitTable').DataTable();
+            $.ajax({
+                "url": "/Home/deleteIspit",
+                "data": { IdI: $($this).attr("data-id") },
+                "type": "POST",
+                "datatype": 'json',
+                "success": function (response) {
+                    alert(response.message);
+                    table.row($($this).parents('tr'))
+                        .remove()
+                        .draw();
+                    location.href = location.href;
+                }
+            });
+        });
+        function GetIspit(IdI) {
+            $.ajax({
+                url: "/Home/GetIspit",
+                data: { IdI: IdI },
+                type: "Get",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "Json",
+                success: function (result) {
+                    $('#txtIdI').val(result.data.IdI);
+                    $('#txtBrIndeksa').val(result.data.BrIndeksa);
+                    $('#txtIdP').val(result.data.IdP);
+                    $('#txtOcena').val(result.data.Ocena);
+                    $('#txtDatum').val(result.data.Datum);
+                    $('#btnSave').hide();
+                    $('#btnUpdate').show();
+                    $('#ModalTitle').text("Update Ispit");
+                    $('#IspitModal').modal('show');
+                }
+            })
+        }
+        function UpdateIspit() {
+
+            var table = $('#IspitTable').DataTable();
+            var model = {
+                IdI: $('#txtIdI').val(),
+                BrIndeksa: $('#txtBrIndeksa').val(),
+                IdP: $('#txtIdP').val(),
+                Ocena: $('#txtOcena').val(),
+                Datum: $('#txtDatum').val(),
+            }
+            $.ajax({
+                url: "/Home/UpdateIspit",
+                type: "Post",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=UTF-8",
+                success: function (response) {
+                    alert(response.message);
+                    table.row('selected').cell(':eq(1)').data([$("#txtBrIndeksa").val()]).draw();
+                    table.row('selected').cell(':eq(2)').data([$('#txtIdP').val()]).draw();
+                    table.row('selected').cell(':eq(3)').data([$('#txtOcena').val()]).draw();
+                    table.row('selected').cell(':eq(4)').data([$('#txtDatum').val()]).draw();
+                    table.draw();
+
+                    $('#btnSave').hide();
+                    $('#btnUpdate').hide();
+
+                }
+            })
+
+
+        }
+        $("#btnClose").click(function () {
+            location.href = location.href;
+        });
+
+
+
+    </script>
+}
+
+
+<div class="modal fade" id="IspitModal" tabindex="-1" role="dialog" aria-labelledby="myModalLable" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalTitle"></h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" id="mConta">
+                    <div class="form-group">
+                        <div class="col-sm-9">
+                            <span class="col-sm-3 control-label" id="txtID"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-9">
+                            <span class="col-sm-3 control-label" id="txtIdI"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Broj indeksa</span>
+                        <div class="col-sm-9">
+
+                            @Html.DropDownList("ListaStd", ViewBag.ispitListaStd as SelectList, "Izaberi broj indeks", new { @id = "txtBrIndeksa", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">IdP</span>
+                        <div class="col-sm-9">
+                            @Html.DropDownList("ListaPred", ViewBag.ispitListaPredmet as SelectList, "Izaberi predmet", new { @id = "txtIdP", @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Ocena</span>
+                        <div class="col-sm-9">
+                            <input id="txtOcena" class="form-control" type="text" placeholder="Unesite Ocenu" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Datum</span>
+                        <div class="col-sm-9">
+                            <input id="txtDatum" class="form-control" type="date" placeholder="Unesite Datum" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">
+                    Save <span class="fa fa-floppy-o" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" hidden" onclick="UpdateIspit()">
+                    Update <span class="fa fa-floppy-o" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

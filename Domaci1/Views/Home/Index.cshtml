@@ -1,0 +1,69 @@
+﻿@model Domaci1.FakultetViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Studenti</h2>
+
+<table id="studentiLista">
+    <thead>
+        <tr>
+            <th>BrIndeks</th>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Grad</th>
+            
+        </tr>
+    </thead>
+</table>
+<h2>Predmeti</h2>
+<table id="predmetiLista">
+    <thead>
+        <tr>
+            <th>Naziv</th>
+
+
+        </tr>
+    </thead>
+</table>
+
+
+<link href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+@section scripts{
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#studentiLista").DataTable({
+                "ajax": {
+                    "url": "/home/loaddata",
+                    "type": 'GET',
+                    "datatype": 'json'
+                },
+                "columns": [
+                    { "data": "BrIndeksa" },
+                    { "data": "Ime" },
+                    { "data": "Prezime" },
+                    { "data": "Grad" }
+                    
+                ]
+            });
+            $("#predmetiLista").DataTable({
+                "ajax": {
+                    "url": "/home/loaddata1",
+                    "type": 'GET',
+                    "datatype": 'json'
+                },
+                "columns": [
+                    { "data": "Naziv" }
+
+                ]
+            });
+
+        });
+    
+    </script>
+
+}
+

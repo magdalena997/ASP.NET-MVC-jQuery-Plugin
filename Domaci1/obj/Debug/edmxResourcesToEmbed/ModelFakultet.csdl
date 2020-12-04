@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Fakultet1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Ispit">
+    <Key>
+      <PropertyRef Name="IdI" />
+    </Key>
+    <Property Name="IdI" Type="Int32" Nullable="false" />
+    <Property Name="BrIndeksa" Type="Int32" />
+    <Property Name="IdP" Type="Int32" />
+    <Property Name="Ocena" Type="Int32" />
+    <Property Name="Datum" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="Predmet" Relationship="Self.FK_Ispit_Predmet" FromRole="Ispit" ToRole="Predmet" />
+    <NavigationProperty Name="Student" Relationship="Self.FK_Ispit_Student" FromRole="Ispit" ToRole="Student" />
+  </EntityType>
+  <EntityType Name="Predmet">
+    <Key>
+      <PropertyRef Name="IdP" />
+    </Key>
+    <Property Name="IdP" Type="Int32" Nullable="false" />
+    <Property Name="Naziv" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Ispits" Relationship="Self.FK_Ispit_Predmet" FromRole="Predmet" ToRole="Ispit" />
+  </EntityType>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="BrIndeksa" />
+    </Key>
+    <Property Name="BrIndeksa" Type="Int32" Nullable="false" />
+    <Property Name="IdS" Type="Int32" />
+    <Property Name="Ime" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Prezime" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Grad" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Ispits" Relationship="Self.FK_Ispit_Student" FromRole="Student" ToRole="Ispit" />
+  </EntityType>
+  <Association Name="FK_Ispit_Predmet">
+    <End Role="Predmet" Type="Self.Predmet" Multiplicity="0..1" />
+    <End Role="Ispit" Type="Self.Ispit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Predmet">
+        <PropertyRef Name="IdP" />
+      </Principal>
+      <Dependent Role="Ispit">
+        <PropertyRef Name="IdP" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Ispit_Student">
+    <End Role="Student" Type="Self.Student" Multiplicity="0..1" />
+    <End Role="Ispit" Type="Self.Ispit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Student">
+        <PropertyRef Name="BrIndeksa" />
+      </Principal>
+      <Dependent Role="Ispit">
+        <PropertyRef Name="BrIndeksa" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="Fakultet1Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Ispits" EntityType="Self.Ispit" />
+    <EntitySet Name="Predmets" EntityType="Self.Predmet" />
+    <EntitySet Name="Students" EntityType="Self.Student" />
+    <AssociationSet Name="FK_Ispit_Predmet" Association="Self.FK_Ispit_Predmet">
+      <End Role="Predmet" EntitySet="Predmets" />
+      <End Role="Ispit" EntitySet="Ispits" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Ispit_Student" Association="Self.FK_Ispit_Student">
+      <End Role="Student" EntitySet="Students" />
+      <End Role="Ispit" EntitySet="Ispits" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

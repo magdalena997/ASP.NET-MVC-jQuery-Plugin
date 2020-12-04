@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Fakultet1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Ispit">
+    <Key>
+      <PropertyRef Name="IdI" />
+    </Key>
+    <Property Name="IdI" Type="int" Nullable="false" />
+    <Property Name="BrIndeksa" Type="int" />
+    <Property Name="IdP" Type="int" />
+    <Property Name="Ocena" Type="int" />
+    <Property Name="Datum" Type="date" />
+  </EntityType>
+  <EntityType Name="Predmet">
+    <Key>
+      <PropertyRef Name="IdP" />
+    </Key>
+    <Property Name="IdP" Type="int" Nullable="false" />
+    <Property Name="Naziv" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="BrIndeksa" />
+    </Key>
+    <Property Name="BrIndeksa" Type="int" Nullable="false" />
+    <Property Name="IdS" Type="int" />
+    <Property Name="Ime" Type="nvarchar" MaxLength="50" />
+    <Property Name="Prezime" Type="nvarchar" MaxLength="50" />
+    <Property Name="Grad" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="FK_Ispit_Predmet">
+    <End Role="Predmet" Type="Self.Predmet" Multiplicity="0..1" />
+    <End Role="Ispit" Type="Self.Ispit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Predmet">
+        <PropertyRef Name="IdP" />
+      </Principal>
+      <Dependent Role="Ispit">
+        <PropertyRef Name="IdP" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Ispit_Student">
+    <End Role="Student" Type="Self.Student" Multiplicity="0..1" />
+    <End Role="Ispit" Type="Self.Ispit" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Student">
+        <PropertyRef Name="BrIndeksa" />
+      </Principal>
+      <Dependent Role="Ispit">
+        <PropertyRef Name="BrIndeksa" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="Fakultet1ModelStoreContainer">
+    <EntitySet Name="Ispit" EntityType="Self.Ispit" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Predmet" EntityType="Self.Predmet" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Ispit_Predmet" Association="Self.FK_Ispit_Predmet">
+      <End Role="Predmet" EntitySet="Predmet" />
+      <End Role="Ispit" EntitySet="Ispit" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Ispit_Student" Association="Self.FK_Ispit_Student">
+      <End Role="Student" EntitySet="Student" />
+      <End Role="Ispit" EntitySet="Ispit" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

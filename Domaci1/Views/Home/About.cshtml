@@ -1,0 +1,241 @@
+﻿@model IEnumerable<Domaci1.Student>
+
+@{
+    ViewBag.Title = "Studenti";
+}
+
+
+<br />
+<button type="button" class="btn btn-primary pull-right" data-toggle="model" id="btnAdd">
+    Dodaj Studenta <span class="fa fa-plus-square" aria-hidden="true"></span>
+</button>
+<br />
+<br />
+<br />
+<table class="table table-striped table-hover table-bordered" id="StudentiTable" style="margin-top:20px">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.BrIndeksa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prezime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grad)
+            </th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrIndeksa)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prezime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grad)
+                </td>
+                <td>
+                    <a id="btnUpdateStd" style='color: #428bca;' onclick="GetStudent(@item.BrIndeksa)" data-toggle='tooltip' title='Promeni Studenta' href='javascript:;'>Promeni</a> |
+                    <a class="fa fa-trash-o btnDelete" style='color: #428bca;' data-toggle='tooltip' title='Obrisi Studenta' data-id="@item.BrIndeksa" href='javascript:;'>Obrisi</a>
+                   
+                </td>
+            </tr>
+
+        }
+    </tbody>
+
+
+
+</table>
+
+
+
+<link href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+@section scripts{
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+       $("#StudentiTable").DataTable({
+            
+        });
+        $("#btnAdd").click(function () {
+            $("#txtBrIndeksa").val("");
+            $("#txtIme").val("");
+            $("#txtPrezime").val("");
+            $("#txtGrad").val("");
+            $("#ModalTitle").text("Dodaj Studenta");
+            $("#btnUpdate").hide();
+            $("#StudentModal").modal('show');
+        });
+        $("#btnSave").click(function () {
+            var table = $("#StudentiTable").DataTable()
+            var StudentObj = {
+              BrIndeksa:$("#txtBrIndeksa").val(),
+              Ime:$("#txtIme").val(),
+              Prezime:$("#txtPrezime").val(),
+              Grad:$("#txtGrad").val()
+        }
+        $.ajax({
+            url:"/Home/DodajStudenta",
+            "type": 'POST',
+            "datatype": 'json',
+            "contentType": "application/json; charset=utf-8",
+            "data":JSON.stringify(StudentObj),
+            "success": function(response){
+                if (response.status) {
+                    alert(response.message);
+                    table.row.add([ $('#txtBrIndeksa').val(), $('#txtIme').val(), $('#txtPrezime').val(), $('#txtGrad').val(), $]).draw(false);
+                          
+                }
+            }
+        });
+        
+            $('#btnSave').hide();
+            $('#btnUpdate').hide();
+        });
+        $('body').on('click', '.btnDelete', function () {
+            var $this = $(this);
+            alert('Are you sure you want to delete this record ?');
+            var table = $('#StudentiTable').DataTable();
+            $.ajax({
+                "url": "/Home/deleteStudent",
+                "data": { BrIndeksa: $($this).attr("data-id") },
+                "type": "POST",
+                "datatype": 'json',
+                "success": function (response) {
+                    alert(response.message);
+                    table.row($($this).parents('tr'))
+                    .remove()
+                    .draw();
+                    location.href = location.href;
+                }
+            });
+        });
+        function GetStudent(BrIndeksa) {
+            $.ajax({
+                url: "/Home/GetStudent",
+                data: { BrIndeksa: BrIndeksa },
+                type: "Get",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "Json",
+                success: function (result) {
+                    $('#txtBrIndeksa').val(result.data.BrIndeksa);
+                    $('#txtIdS').val(result.data.IdS);
+                    $('#txtIme').val(result.data.Ime);
+                    $('#txtPrezime').val(result.data.Prezime);
+                    $('#txtGrad').val(result.data.Grad);
+                    $('#btnSave').hide();
+                    $('#btnUpdate').show();
+                    $('#ModalTitle').text("Update Student");
+                    $('#StudentModal').modal('show');
+                }
+            })
+        }
+        function UpdateStudent() {
+           
+            var table = $('#StudentiTable').DataTable();
+            var model = {
+                BrIndeksa: $('#txtBrIndeksa').val(),
+                IdS: $('#txtIdS').val(),
+                Ime: $('#txtIme').val(),
+                Prezime: $('#txtPrezime').val(),
+                Grad: $('#txtGrad').val()
+            }
+            $.ajax({
+                url: "/Home/UpdateStudenta",
+                type: "Post",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=UTF-8",
+                success: function (response) {
+                    alert(response.message);
+                    table.row('selected').cell(':eq(0)').data([$("#txtBrIndeksa").val()]).draw();
+                    table.row('selected').cell(':eq(2)').data([$('#txtIme').val()]).draw();
+                    table.row('selected').cell(':eq(3)').data([$('#txtPrezime').val()]).draw();
+                    table.row('selected').cell(':eq(4)').data([$('#txtGrad').val()]).draw();
+                    table.draw();
+                    
+                    $('#btnSave').hide();
+                    $('#btnUpdate').hide();
+                    
+                }
+            })
+           
+            
+        }
+        $("#btnClose").click(function () {
+            location.href = location.href;
+        })
+       
+        
+    </script>
+}
+<div class="modal fade" id="StudentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLable" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalTitle"></h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" id="mConta">
+                    <div class="form-group">
+
+                        <div class="col-sm-9">
+                            <span class=" col-sm-3 control-label" id="txtIdS"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">BrIndeksa</span>
+                        <div class="col-sm-9">
+                            <input id="txtBrIndeksa" class="form-control" type="text" placeholder="Unesite Broj Indeksa" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Ime</span>
+                        <div class="col-sm-9">
+                            <input id="txtIme" class="form-control" type="text" placeholder="Unesite Ime" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Prezime</span>
+                        <div class="col-sm-9">
+                            <input id="txtPrezime" class="form-control" type="text" placeholder="Unesite Prezime" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="required col-sm-3 control-label" style="font-weight:bold;">Grad</span>
+                        <div class="col-sm-9">
+                            <input id="txtGrad" class="form-control" type="text" placeholder="Unesite Grad" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btnClose">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">
+                    Save <span class="fa fa-floppy-o" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" hidden" onclick="UpdateStudent()">
+                    Update <span class="fa fa-floppy-o" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

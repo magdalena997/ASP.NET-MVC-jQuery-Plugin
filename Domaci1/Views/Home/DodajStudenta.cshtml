@@ -1,0 +1,22 @@
+﻿@model Domaci1.FakultetViewModel
+@{
+    ViewBag.Title = "DodajStudenta";
+}
+
+<h2>Dodaj Studenta</h2>
+
+<div class="container" style="width:40%;margin-top:2%">
+    @using (Html.BeginForm("saveStudent", "Home", FormMethod.Post))
+    {
+        @Html.TextBoxFor(model => model.BrIndeksa, new { @class = "form-control", @placeholder = "BrIndeksa" })
+        @Html.TextBoxFor(model => model.IdS, new { @class = "form-control", @placeholder = "IdS" })
+        @Html.TextBoxFor(model => model.Ime, new { @class = "form-control", @placeholder = "Ime" })
+        @Html.TextBoxFor(model => model.Prezime, new { @class = "form-control", @placeholder = "Prezime" })
+        @Html.TextBoxFor(model => model.Grad, new { @class = "form-control", @placeholder = "Grad" })
+
+        <input type="submit" value="Dodaj studenta" class="btn btn-block btn-primary" />
+    }
+
+
+</div>
+

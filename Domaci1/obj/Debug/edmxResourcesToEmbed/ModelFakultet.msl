@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="Fakultet1ModelStoreContainer" CdmEntityContainer="Fakultet1Entities">
+    <EntitySetMapping Name="Ispits">
+      <EntityTypeMapping TypeName="Fakultet1Model.Ispit">
+        <MappingFragment StoreEntitySet="Ispit">
+          <ScalarProperty Name="IdI" ColumnName="IdI" />
+          <ScalarProperty Name="BrIndeksa" ColumnName="BrIndeksa" />
+          <ScalarProperty Name="IdP" ColumnName="IdP" />
+          <ScalarProperty Name="Ocena" ColumnName="Ocena" />
+          <ScalarProperty Name="Datum" ColumnName="Datum" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Predmets">
+      <EntityTypeMapping TypeName="Fakultet1Model.Predmet">
+        <MappingFragment StoreEntitySet="Predmet">
+          <ScalarProperty Name="IdP" ColumnName="IdP" />
+          <ScalarProperty Name="Naziv" ColumnName="Naziv" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Students">
+      <EntityTypeMapping TypeName="Fakultet1Model.Student">
+        <MappingFragment StoreEntitySet="Student">
+          <ScalarProperty Name="BrIndeksa" ColumnName="BrIndeksa" />
+          <ScalarProperty Name="IdS" ColumnName="IdS" />
+          <ScalarProperty Name="Ime" ColumnName="Ime" />
+          <ScalarProperty Name="Prezime" ColumnName="Prezime" />
+          <ScalarProperty Name="Grad" ColumnName="Grad" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>
